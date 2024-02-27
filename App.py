@@ -19,7 +19,7 @@ if archivo_usuario is not None:
         
         # Convertimos las columnas de fechas de formato Excel a formato de fecha
         for col in ['Fe.inic.extrema', 'Fecha entrada']:
-            df[col] = pd.to_datetime(df[col], origin='1899-12-30', unit='D')
+            df[col] = pd.to_datetime(df[col], origin='1899-12-30', unit='D').dt.date
             
     except UnicodeDecodeError as e:
         st.error("Error de decodificación. Intente cambiar la codificación del archivo si el problema persiste.")
