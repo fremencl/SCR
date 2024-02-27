@@ -18,7 +18,7 @@ if archivo_usuario is not None:
         df['Orden'] = df['Orden'].astype(str)
         
         # Convertimos las columnas de fechas de formato Excel a formato de fecha y eliminamos la hora
-        for col in ['Fe.inic.extrema', 'Fe.fin.extrema', 'Fecha entrada']:
+        for col in ['Fe.inic.extrema', 'Fecha entrada']:
             df[col] = pd.to_datetime(df[col], origin='1899-12-30', unit='D').dt.date
         
         # Agregamos las nuevas columnas
