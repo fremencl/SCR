@@ -3,7 +3,7 @@ import streamlit as st
 import pandas as pd
 
 # Título de la aplicación
-st.title('Portal Procesamientos datos SCR')
+st.title('Portal Procesamiento datos SCR')
 
 # Carga del archivo - solo CSV
 archivo_usuario = st.file_uploader("Por favor, cargue su archivo de datos en formato CSV aquí", type=['csv'])
@@ -13,6 +13,14 @@ if archivo_usuario is not None:
     try:
         # Especificamos la codificación ISO-8859-1 y el separador ";"
         df = pd.read_csv(archivo_usuario, encoding='ISO-8859-1', sep=';')
+        
+        # Transformamos la columna "Orden" a string
+        df['Orden'] = df['Orden'].astype(str)
+        
+        # Convertimos las columnas de fechas de formato Excel a formato de fecha
+        for col in ['Fe.inic.extrema', 'Fe.fin.extrema', 'Fecha entrada']:
+            df[col] = pd.to_datetime(df[col], origin='1899-12-30', unit='D')
+            
     except UnicodeDecodeError as e:
         st.error("Error de decodificación. Intente cambiar la codificación del archivo si el problema persiste.")
         raise e
