@@ -47,12 +47,17 @@ if st.button('Iniciar Procesamiento'):
 
         # Cargamos el archivo de referencia y realizamos el mapeo
         data1 = load_data1()  # Aseguramos cargar los datos de referencia
-        dict_mapeo = pd.Series(data1.CODIGO_OBRA.values, index=data1.ID_EQUIPO).to_dict()
-        df['CODIGO_OBRA'] = df['Equipos'].map(dict_mapeo)
         
-        st.success("Procesamiento completado exitosamente!")
-        st.write(df)  # Mostramos el DataFrame después del mapeo
-
+        # Verificamos que las columnas esperadas existen en data1
+        expected_columns = ['CODIGO_OBRA', 'ID_EQUIPO']
+        if not all(column in data1.columns for column in expected_columns):
+            st.error(f"El archivo de referencia no contiene las columnas esperadas: {expected_columns}")
+        else:
+            dict_mapeo = pd.Series(data1.CODIGO_OBRA.values, index=data1.ID_EQUIPO).to_dict()
+            df['CODIGO_OBRA'] = df['Equipos'].map(dict_mapeo)
+            st.success("Procesamiento completado exitosamente!")
+            st.write(df)
+        
         # Preparar el DataFrame para la descarga
         csv = df.to_csv(index=False, encoding='ISO-8859-1', sep=';').encode('ISO-8859-1')
         
