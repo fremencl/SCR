@@ -42,9 +42,9 @@ if st.button('Iniciar Procesamiento'):
 
         # Función para cargar el archivo de referencia
         def load_data1():
-            data1 = pd.read_csv(DATA1_URL)
+            data1 = pd.read_csv(DATA1_URL, encoding='ISO-8859-1', sep=';')
             return data1
-
+        
         # Cargamos el archivo de referencia y realizamos el mapeo
         data1 = load_data1()  # Aseguramos cargar los datos de referencia
         
