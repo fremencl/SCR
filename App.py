@@ -5,14 +5,6 @@ import pandas as pd
 # Título de la aplicación
 st.title('Portal Procesamiento datos SCR')
 
-# Definimos la URL del archivo de referencia (asegúrate de que la URL es correcta)
-DATA1_URL = 'https://streamlitmaps.s3.amazonaws.com/data1.csv'
-
-# Definimos una función para cargar el archivo de referencia
-def load_data1():
-    data1 = pd.read_csv(DATA1_URL)
-    return data1
-
 # Carga del archivo - solo CSV
 archivo_usuario = st.file_uploader("Por favor, cargue su archivo de datos en formato CSV aquí", type=['csv'])
 
@@ -29,19 +21,37 @@ if archivo_usuario is not None:
         
         # Agregamos las nuevas columnas y eliminamos filas no deseadas
         df["CODIGO_OBRA"] = pd.NA
+        df["RECINTO"] = pd.NA
+        df["LOCALIDAD"] = pd.NA
+        df["TIPO_OBRA"] = pd.NA
         df = df[df["Status usuario"] != "NOEJ"]
+        
+        # Mostramos un preview del DataFrame para confirmación del usuario
+        st.write(df)
+
+    except Exception as e:
+        st.error(f"Se ha producido un error al cargar el archivo: {e}")
+else:
+    st.write("Por favor, cargue un archivo CSV para continuar.")
+
+# Botón para iniciar el procesamiento (mapeo)
+if st.button('Iniciar Procesamiento'):
+    if 'df' in locals() or 'df' in globals():
+        # Definimos la URL del archivo de referencia (asegúrate de que la URL es correcta)
+        DATA1_URL = 'https://streamlitmaps.s3.amazonaws.com/data1.csv'
+
+        # Función para cargar el archivo de referencia
+        def load_data1():
+            data1 = pd.read_csv(DATA1_URL)
+            return data1
 
         # Cargamos el archivo de referencia y realizamos el mapeo
         data1 = load_data1()  # Aseguramos cargar los datos de referencia
         dict_mapeo = pd.Series(data1.CODIGO_OBRA.values, index=data1.ID_EQUIPO).to_dict()
         df['CODIGO_OBRA'] = df['Equipos'].map(dict_mapeo)
         
-    except Exception as e:
-        st.error(f"Se ha producido un error al cargar el archivo: {e}")
-    else:
-        # Mostramos el DataFrame procesado
-        st.success("Archivo cargado y procesado exitosamente!")
-        st.write(df)
+        st.success("Procesamiento completado exitosamente!")
+        st.write(df)  # Mostramos el DataFrame después del mapeo
 
         # Preparar el DataFrame para la descarga
         csv = df.to_csv(index=False, encoding='ISO-8859-1', sep=';').encode('ISO-8859-1')
@@ -53,5 +63,5 @@ if archivo_usuario is not None:
             file_name='datos_procesados.csv',
             mime='text/csv',
         )
-else:
-    st.write("Por favor, cargue un archivo CSV para continuar.")
+    else:
+        st.error("No hay datos cargados para procesar.")
