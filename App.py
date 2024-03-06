@@ -56,7 +56,7 @@ if st.button('Iniciar Procesamiento'):
             df['CODIGO_OBRA'] = df['Equipos'].map(dict_mapeo)
 
             # Definimos la URL del segundo archivo de referencia (data_6.csv)
-            DATA6_URL = 'https://streamlitmaps.s3.amazonaws.com/data6.csv'
+            DATA6_URL = 'https://streamlitmaps.s3.amazonaws.com/data_6.csv'
 
             # Función para cargar el segundo archivo de referencia
             def load_data6():
