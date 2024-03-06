@@ -37,16 +37,15 @@ else:
 # Botón para iniciar el procesamiento (mapeo)
 if st.button('Iniciar Procesamiento'):
     if 'df' in locals() or 'df' in globals():
-        # Definimos la URL del archivo de referencia (asegúrate de que la URL es correcta)
+        # Definimos la URL del primer archivo de referencia
         DATA1_URL = 'https://streamlitmaps.s3.amazonaws.com/data1.csv'
 
-        # Función para cargar el archivo de referencia
+        # Función para cargar el primer archivo de referencia
         def load_data1():
             data1 = pd.read_csv(DATA1_URL, encoding='ISO-8859-1', sep=';')
             return data1
         
-        # Cargamos el archivo de referencia y realizamos el mapeo
-        data1 = load_data1()  # Aseguramos cargar los datos de referencia
+        data1 = load_data1()  # Cargamos el primer archivo de referencia
         
         # Verificamos que las columnas esperadas existen en data1
         expected_columns = ['CODIGO_OBRA', 'ID_EQUIPO']
@@ -55,18 +54,34 @@ if st.button('Iniciar Procesamiento'):
         else:
             dict_mapeo = pd.Series(data1.CODIGO_OBRA.values, index=data1.ID_EQUIPO).to_dict()
             df['CODIGO_OBRA'] = df['Equipos'].map(dict_mapeo)
+
+            # Definimos la URL del segundo archivo de referencia (data_6.csv)
+            DATA6_URL = 'https://streamlitmaps.s3.amazonaws.com/data6.csv'
+
+            # Función para cargar el segundo archivo de referencia
+            def load_data6():
+                data6 = pd.read_csv(DATA6_URL, encoding='ISO-8859-1', sep=';')
+                return data6
+            
+            data6 = load_data6()  # Cargamos el segundo archivo de referencia
+            
+            # Realizamos el segundo mapeo
+            dict_mapeo2 = pd.Series(data6.CodObra.values, index=data6.Utec).to_dict()
+            # Aplicamos el segundo mapeo solo a las filas donde "CODIGO_OBRA" está vacío
+            df.loc[df["CODIGO_OBRA"].isna(), "CODIGO_OBRA"] = df["Ubicac.técnica"].map(dict_mapeo2)
+
             st.success("Procesamiento completado exitosamente!")
             st.write(df)
-        
-        # Preparar el DataFrame para la descarga
-        csv = df.to_csv(index=False, encoding='ISO-8859-1', sep=';').encode('ISO-8859-1')
-        
-        # Widget de descarga
-        st.download_button(
-            label="Descargar datos como CSV",
-            data=csv,
-            file_name='datos_procesados.csv',
-            mime='text/csv',
-        )
+            
+            # Preparar el DataFrame para la descarga
+            csv = df.to_csv(index=False, encoding='ISO-8859-1', sep=';').encode('ISO-8859-1')
+            
+            # Widget de descarga
+            st.download_button(
+                label="Descargar datos como CSV",
+                data=csv,
+                file_name='datos_procesados.csv',
+                mime='text/csv',
+            )
     else:
         st.error("No hay datos cargados para procesar.")
