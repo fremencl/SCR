@@ -32,7 +32,7 @@ if archivo_usuario is not None:
     except Exception as e:
         st.error(f"Se ha producido un error al cargar el archivo: {e}")
 else:
-    st.write("Por favor, cargue un archivo CSV para continuar.")
+    st.write("Esta App agregará Codigos NBI de manera automatica en tu archivo")
 
 # Botón para iniciar el procesamiento (mapeo)
 if st.button('Iniciar Procesamiento'):
