@@ -72,7 +72,7 @@ if st.button('Iniciar Procesamiento'):
 
             st.success("Procesamiento completado exitosamente!")
             st.write(df)
-        2
+        
             # Preparar el DataFrame para la descarga
             csv = df.to_csv(index=False, encoding='ISO-8859-1', sep=';').encode('ISO-8859-1')
             
