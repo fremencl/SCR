@@ -75,11 +75,13 @@ if st.button('Iniciar Procesamiento'):
 
             # Crear mapeos para RECINTO, LOCALIDAD y TIPO_OBRA
             mapeo_recinto = pd.Series(data1.RECINTO.values, index=data1.CODIGO_OBRA).to_dict()
-
+            mapeo_localidad = pd.Series(data1.LOCALIDAD.values, index=data1.CODIGO_OBRA).to_dict()
+            mapeo_tipobra = pd.Series(data1.TIPO_OBRA.values, index=data1.CODIGO_OBRA).to_dict()
+            
             # Aplicar el mapeo para completar el campo RECINTO en df_filtrado
             df_filtrado['RECINTO'] = df_filtrado['CODIGO_OBRA'].map(mapeo_recinto)
-            df_filtrado['LOCALIDAD'] = df_filtrado['CODIGO_OBRA'].map(mapeo_recinto)
-            df_filtrado['TIPO_OBRA'] = df_filtrado['CODIGO_OBRA'].map(mapeo_recinto)
+            df_filtrado['LOCALIDAD'] = df_filtrado['CODIGO_OBRA'].map(mapeo_localidad)
+            df_filtrado['TIPO_OBRA'] = df_filtrado['CODIGO_OBRA'].map(mapeo_tipobra)
 
             st.success("Procesamiento completado exitosamente!")
             st.write(df_filtrado)
