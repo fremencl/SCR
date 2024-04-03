@@ -70,6 +70,15 @@ if st.button('Iniciar Procesamiento'):
             # Aplicamos el segundo mapeo solo a las filas donde "CODIGO_OBRA" está vacío
             df.loc[df["CODIGO_OBRA"].isna(), "CODIGO_OBRA"] = df["Ubicac.técnica"].map(dict_mapeo2)
 
+            # Filtrar df para trabajar solo con filas donde CODIGO_OBRA no está vacío
+            df_filtrado = df.dropna(subset=['CODIGO_OBRA'])
+
+            # Crear mapeos para RECINTO, LOCALIDAD y TIPO_OBRA
+            mapeo_recinto = pd.Series(data1.RECINTO.values, index=data1.CODIGO_OBRA).to_dict()
+
+            # Aplicar el mapeo para completar el campo RECINTO en df_filtrado
+            df_filtrado['RECINTO'] = df_filtrado['CODIGO_OBRA'].map(mapeo_recinto)
+
             st.success("Procesamiento completado exitosamente!")
             st.write(df)
         
