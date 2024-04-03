@@ -80,10 +80,10 @@ if st.button('Iniciar Procesamiento'):
             df_filtrado['RECINTO'] = df_filtrado['CODIGO_OBRA'].map(mapeo_recinto)
 
             st.success("Procesamiento completado exitosamente!")
-            st.write(df)
+            st.write(df_filtrado)
         
             # Preparar el DataFrame para la descarga
-            csv = df.to_csv(index=False, encoding='ISO-8859-1', sep=';').encode('ISO-8859-1')
+            csv = df_filtrado.to_csv(index=False, encoding='ISO-8859-1', sep=';').encode('ISO-8859-1')
             
             # Widget de descarga
             st.download_button(
