@@ -78,6 +78,8 @@ if st.button('Iniciar Procesamiento'):
 
             # Aplicar el mapeo para completar el campo RECINTO en df_filtrado
             df_filtrado['RECINTO'] = df_filtrado['CODIGO_OBRA'].map(mapeo_recinto)
+            df_filtrado['LOCALIDAD'] = df_filtrado['CODIGO_OBRA'].map(mapeo_recinto)
+            df_filtrado['TIPO_OBRA'] = df_filtrado['CODIGO_OBRA'].map(mapeo_recinto)
 
             st.success("Procesamiento completado exitosamente!")
             st.write(df_filtrado)
