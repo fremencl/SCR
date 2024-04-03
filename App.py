@@ -71,23 +71,23 @@ if st.button('Iniciar Procesamiento'):
             df.loc[df["CODIGO_OBRA"].isna(), "CODIGO_OBRA"] = df["Ubicac.técnica"].map(dict_mapeo2)
 
             # Filtrar df para trabajar solo con filas donde CODIGO_OBRA no está vacío
-            df_filtrado = df.dropna(subset=['CODIGO_OBRA'])
+            # df_filtrado = df.dropna(subset=['CODIGO_OBRA'])
 
             # Crear mapeos para RECINTO, LOCALIDAD y TIPO_OBRA
             mapeo_recinto = pd.Series(data1.RECINTO.values, index=data1.CODIGO_OBRA).to_dict()
             mapeo_localidad = pd.Series(data1.LOCALIDAD.values, index=data1.CODIGO_OBRA).to_dict()
             mapeo_tipobra = pd.Series(data1.TIPO_OBRA.values, index=data1.CODIGO_OBRA).to_dict()
             
-            # Aplicar el mapeo para completar el campo RECINTO en df_filtrado
-            df_filtrado['RECINTO'] = df_filtrado['CODIGO_OBRA'].map(mapeo_recinto)
-            df_filtrado['LOCALIDAD'] = df_filtrado['CODIGO_OBRA'].map(mapeo_localidad)
-            df_filtrado['TIPO_OBRA'] = df_filtrado['CODIGO_OBRA'].map(mapeo_tipobra)
+            # Aplicar los mapeos directamente en el df original sin eliminar filas
+            df['RECINTO'] = df['CODIGO_OBRA'].map(mapeo_recinto).fillna(df['RECINTO'])
+            df['LOCALIDAD'] = df['CODIGO_OBRA'].map(mapeo_localidad).fillna(df['LOCALIDAD'])
+            df['TIPO_OBRA'] = df['CODIGO_OBRA'].map(mapeo_tipobra).fillna(df['TIPO_OBRA'])
 
             st.success("Procesamiento completado exitosamente!")
-            st.write(df_filtrado)
+            st.write(df)
         
             # Preparar el DataFrame para la descarga
-            csv = df_filtrado.to_csv(index=False, encoding='ISO-8859-1', sep=';').encode('ISO-8859-1')
+            csv = df.to_csv(index=False, encoding='ISO-8859-1', sep=';').encode('ISO-8859-1')
             
             # Widget de descarga
             st.download_button(
