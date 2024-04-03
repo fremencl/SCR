@@ -38,7 +38,7 @@ else:
 if st.button('Iniciar Procesamiento'):
     if 'df' in locals() or 'df' in globals():
         # Definimos la URL del primer archivo de referencia
-        DATA1_URL = 'https://streamlitmaps.s3.amazonaws.com/data1.csv'
+        DATA1_URL = 'https://streamlitmaps.s3.amazonaws.com/Base_Equipos_NBI_Resumen.csv'
 
         # Función para cargar el primer archivo de referencia
         def load_data1():
@@ -48,31 +48,31 @@ if st.button('Iniciar Procesamiento'):
         data1 = load_data1()  # Cargamos el primer archivo de referencia
         
         # Verificamos que las columnas esperadas existen en data1
-        expected_columns = ['CODIGO_OBRA', 'ID_EQUIPO']
+        expected_columns = ['CODIGO_OBRA', 'Equipo']
         if not all(column in data1.columns for column in expected_columns):
             st.error(f"El archivo de referencia no contiene las columnas esperadas: {expected_columns}")
         else:
-            dict_mapeo = pd.Series(data1.CODIGO_OBRA.values, index=data1.ID_EQUIPO).to_dict()
-            df['CODIGO_OBRA'] = df['Equipos'].map(dict_mapeo)
+            dict_mapeo = pd.Series(data1.CODIGO_OBRA.values, index=data1.Equipo).to_dict()
+            df['CODIGO_OBRA'] = df['Equipo'].map(dict_mapeo)
 
-            # Definimos la URL del segundo archivo de referencia (data_6.csv)
-            DATA6_URL = 'https://streamlitmaps.s3.amazonaws.com/data_6.csv'
+            # Definimos la URL del segundo archivo de referencia (data_2.csv)
+            DATA2_URL = 'https://streamlitmaps.s3.amazonaws.com/Base_UTEC_2024.csv'
 
             # Función para cargar el segundo archivo de referencia
-            def load_data6():
-                data6 = pd.read_csv(DATA6_URL, encoding='ISO-8859-1', sep=';')
-                return data6
+            def load_data2():
+                data2 = pd.read_csv(DATA2_URL, encoding='ISO-8859-1', sep=';')
+                return data2
             
-            data6 = load_data6()  # Cargamos el segundo archivo de referencia
+            data2 = load_data2()  # Cargamos el segundo archivo de referencia
             
             # Realizamos el segundo mapeo
-            dict_mapeo2 = pd.Series(data6.CodObra.values, index=data6.Utec).to_dict()
+            dict_mapeo2 = pd.Series(data2.CODIGO_OBRA.values, index=data2.UTEC).to_dict()
             # Aplicamos el segundo mapeo solo a las filas donde "CODIGO_OBRA" está vacío
             df.loc[df["CODIGO_OBRA"].isna(), "CODIGO_OBRA"] = df["Ubicac.técnica"].map(dict_mapeo2)
 
             st.success("Procesamiento completado exitosamente!")
             st.write(df)
-            
+        2
             # Preparar el DataFrame para la descarga
             csv = df.to_csv(index=False, encoding='ISO-8859-1', sep=';').encode('ISO-8859-1')
             
