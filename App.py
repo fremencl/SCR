@@ -35,11 +35,8 @@ if archivo_usuario is not None:
         equivalencias = {1000: '033', 2000: '034', 2100: '034', 3100: '035'}
         df['CODIGO_EMPRESA'] = df['Sociedad'].map(equivalencias).fillna(df['CODIGO_EMPRESA']).astype(str)
 
-        import pandas as pd
-
-        # Asegúrate de que las fechas ya están en formato datetime
-        # df['Fecha entrada'] = pd.to_datetime(df['Fecha entrada'])
-        # df['Fe.inic.extrema'] = pd.to_datetime(df['Fe.inic.extrema'])
+        df["ANO_INFORMADO"] = '2024'
+        df["CODIGO_SECTOR_TARIFARIO"] = '01'
 
         # Función para aplicar la lógica de procesamiento
         def procesar_fechas(row):
@@ -111,7 +108,7 @@ if st.button('Iniciar Procesamiento'):
             df['LOCALIDAD'] = df['CODIGO_OBRA'].map(mapeo_localidad).fillna(df['LOCALIDAD'])
             df['TIPO_OBRA'] = df['CODIGO_OBRA'].map(mapeo_tipobra).fillna(df['TIPO_OBRA'])
 
-            st.success("Procesamiento completado exitosamente!")
+            st.success("Espera un momento mientras procesamos tu archivo NBI!")
             st.write(df)
         
             # Preparar el DataFrame para la descarga
