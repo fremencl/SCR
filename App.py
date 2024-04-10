@@ -35,6 +35,25 @@ if archivo_usuario is not None:
         equivalencias = {1000: '033', 2000: '034', 2100: '034', 3100: '035'}
         df['CODIGO_EMPRESA'] = df['Sociedad'].map(equivalencias).fillna(df['CODIGO_EMPRESA']).astype(str)
 
+        import pandas as pd
+
+        # Asegúrate de que las fechas ya están en formato datetime
+        # df['Fecha entrada'] = pd.to_datetime(df['Fecha entrada'])
+        # df['Fe.inic.extrema'] = pd.to_datetime(df['Fe.inic.extrema'])
+
+        # Función para aplicar la lógica de procesamiento
+        def procesar_fechas(row):
+            if row['Clase de orden'] in ['PM01', 'PM02']:
+                row['PERIODO_INFORMACION'] = row['Fecha entrada'].year
+                row['FECHA_EVENTO'] = row['Fecha entrada']
+            elif row['Clase de orden'] == 'PM03':
+                row['PERIODO_INFORMACION'] = row['Fe.inic.extrema'].year
+                row['FECHA_EVENTO'] = row['Fe.inic.extrema']
+            return row
+
+        # Aplicar la función a cada fila
+        df = df.apply(procesar_fechas, axis=1)
+
         # Mostramos un preview del DataFrame para confirmación del usuario
         st.write(df)
 
