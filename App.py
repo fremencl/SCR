@@ -38,13 +38,12 @@ if archivo_usuario is not None:
         df["ANO_INFORMADO"] = '2024'
         df["CODIGO_SECTOR_TARIFARIO"] = '01'
 
-        # Función para aplicar la lógica de procesamiento
         def procesar_fechas(row):
             if row['Clase de orden'] in ['PM01', 'PM02']:
-                row['PERIODO_INFORMACION'] = row['Fecha entrada'].year
+                row['PERIODO_INFORMACION'] = str(row['Fecha entrada'].year)
                 row['FECHA_EVENTO'] = row['Fecha entrada']
             elif row['Clase de orden'] == 'PM03':
-                row['PERIODO_INFORMACION'] = row['Fe.inic.extrema'].year
+                row['PERIODO_INFORMACION'] = str(row['Fe.inic.extrema'].year)
                 row['FECHA_EVENTO'] = row['Fe.inic.extrema']
             return row
 
