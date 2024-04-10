@@ -29,6 +29,7 @@ if archivo_usuario is not None:
         df["ANO_INFORMADO"] = pd.NA
         df["CODIGO_SECTOR_TARIFARIO"] = pd.NA
         df["FECHA_EVENTO"] = pd.NA
+        df["CODIGO_ACTIVIDAD"] = pd.NA
         df = df[df["Status usuario"] != "NOEJ"]
         
         # ETAPA 2 COMPLETAR CAMPOS CODIGO_EMPRESA
@@ -106,6 +107,28 @@ if st.button('Iniciar Procesamiento'):
             df['RECINTO'] = df['CODIGO_OBRA'].map(mapeo_recinto).fillna(df['RECINTO'])
             df['LOCALIDAD'] = df['CODIGO_OBRA'].map(mapeo_localidad).fillna(df['LOCALIDAD'])
             df['TIPO_OBRA'] = df['CODIGO_OBRA'].map(mapeo_tipobra).fillna(df['TIPO_OBRA'])
+
+            # Definimos la URL del segundo archivo de referencia data_3.csv
+            DATA3_URL = 'https://streamlitmaps.s3.amazonaws.com/Codigo_Actividad.csv'
+        
+            # Función para cargar el primer archivo de referencia
+            def load_data3():
+                data3 = pd.read_csv(DATA3_URL, encoding='ISO-8859-1', sep=';')
+                return data3
+        
+            data3 = load_data3()  # Cargamos el tercer archivo de referencia
+
+            # Crear la columna temporal "CONCA_1" concatenando "Clase de orden" y "TIPO_OBRA"
+            df['CONCA_1'] = df['Clase de orden'] + df['TIPO_OBRA']
+
+            # Preparar el diccionario para el mapeo desde el tercer archivo de referencia
+            dict_mapeo3 = pd.Series(data3.CODIGO_ACTIVIDAD.values, index=data3.CONCA_1).to_dict()
+
+            # Realizar el mapeo para obtener "CODIGO_ACTIVIDAD" basado en "CONCA_1"
+            df['CODIGO_ACTIVIDAD'] = df['CONCA_1'].map(dict_mapeo3)
+
+            # Eliminar la columna temporal "CONCA_1" después del mapeo
+            df.drop(columns='CONCA_1', inplace=True)
 
             st.success("Espera un momento mientras procesamos tu archivo NBI!")
             st.write(df)
