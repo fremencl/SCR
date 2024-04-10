@@ -24,8 +24,17 @@ if archivo_usuario is not None:
         df["RECINTO"] = pd.NA
         df["LOCALIDAD"] = pd.NA
         df["TIPO_OBRA"] = pd.NA
+        df["CODIGO_EMPRESA"] = pd.NA
+        df["PERIODO_INFORMACION"] = pd.NA
+        df["ANO_INFORMADO"] = pd.NA
+        df["CODIGO_SECTOR_TARIFARIO"] = pd.NA
+        df["FECHA_EVENTO"] = pd.NA
         df = df[df["Status usuario"] != "NOEJ"]
         
+        # ETAPA 2 COMPLETAR CAMPOS CODIGO_EMPRESA
+        equivalencias = {1000: '033', 2000: '034', 2100: '034', 3100: '035'}
+        df['CODIGO_EMPRESA'] = df['Sociedad'].map(equivalencias).fillna(df['CODIGO_EMPRESA']).astype(str)
+
         # Mostramos un preview del DataFrame para confirmación del usuario
         st.write(df)
 
