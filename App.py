@@ -130,6 +130,9 @@ if st.button('Iniciar Procesamiento'):
             # Eliminar la columna temporal "CONCA_1" después del mapeo
             df.drop(columns='CONCA_1', inplace=True)
 
+            # Definimos la URL archivo de referencia Tipo Actividad mantencion
+            DATA4_URL = 'https://streamlitscr.s3.amazonaws.com/Tipo_act_mant.csv'
+            
             st.success("Espera un momento mientras procesamos tu archivo NBI!")
             st.write(df)
         
