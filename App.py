@@ -30,6 +30,7 @@ if archivo_usuario is not None:
         df["CODIGO_SECTOR_TARIFARIO"] = pd.NA
         df["FECHA_EVENTO"] = pd.NA
         df["CODIGO_ACTIVIDAD"] = pd.NA
+        df["TIPO_ACTIVIDAD_MANTENCION"] = pd.NA
         df = df[df["Status usuario"] != "NOEJ"]
         
         # ETAPA 2 COMPLETAR CAMPOS CODIGO_EMPRESA
@@ -111,7 +112,7 @@ if st.button('Iniciar Procesamiento'):
             # Definimos la URL del segundo archivo de referencia data_3.csv
             DATA3_URL = 'https://streamlitscr.s3.amazonaws.com/Codigo_Actividad.csv'
         
-            # Función para cargar el primer archivo de referencia
+            # Función para cargar el tercer archivo de referencia
             def load_data3():
                 data3 = pd.read_csv(DATA3_URL, encoding='ISO-8859-1', sep=';')
                 return data3
@@ -132,6 +133,28 @@ if st.button('Iniciar Procesamiento'):
 
             # Definimos la URL archivo de referencia Tipo Actividad mantencion
             DATA4_URL = 'https://streamlitscr.s3.amazonaws.com/Tipo_act_mant.csv'
+
+            # Función para cargar el tercer archivo de referencia
+            def load_data4():
+                data4 = pd.read_csv(DATA4_URL, encoding='ISO-8859-1', sep=';')
+                return data4
+
+            data4 = load_data4()  # Cargamos el cuarto archivo de referencia
+
+            # Crear la columna temporal "Familia" extrayendo los primeros 4 caracteres de "Equipo"
+            df['Familia'] = df['Equipo'].str[:4]
+            
+            # Crear la columna temporal "CONCA_2" concatenando "Familia" y "Clase de orden"
+            df['CONCA_2'] = df['Familia'] + df['Clase de orden']
+
+            # Preparar el diccionario para el mapeo desde el cuarto archivo de referencia
+            dict_mapeo4 = pd.Series(data4.Tipo_act_mant.values, index=data4.CONCA_2).to_dict()
+
+            # Realizar el mapeo para obtener "TIPO_ACTIVIDAD_MANTENCION" basado en "CONCA_2"
+            df['TIPO_ACTIVIDAD_MANTENCION'] = df['CONCA_2'].map(dict_mapeo4)
+
+            # Eliminar las columnas temporales "Familia" y "CONCA_2" después del mapeo
+            df.drop(columns=['Familia', 'CONCA_2'], inplace=True)
             
             st.success("Espera un momento mientras procesamos tu archivo NBI!")
             st.write(df)
