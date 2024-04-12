@@ -109,7 +109,7 @@ if st.button('Iniciar Procesamiento'):
             df['TIPO_OBRA'] = df['CODIGO_OBRA'].map(mapeo_tipobra).fillna(df['TIPO_OBRA'])
 
             # Definimos la URL del segundo archivo de referencia data_3.csv
-            DATA3_URL = 'https://streamlitmaps.s3.amazonaws.com/Codigo_Actividad.csv'
+            DATA3_URL = 'https://streamlitscr.s3.amazonaws.com/Codigo_Actividad.csv'
         
             # Función para cargar el primer archivo de referencia
             def load_data3():
