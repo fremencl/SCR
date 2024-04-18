@@ -1,6 +1,7 @@
 # Importacion de librerias
 import streamlit as st
 import pandas as pd
+import numpy as np
 
 # Título de la aplicación
 st.title('Portal Procesamiento datos SCR')
@@ -31,6 +32,8 @@ if archivo_usuario is not None:
         df["FECHA_EVENTO"] = pd.NA
         df["CODIGO_ACTIVIDAD"] = pd.NA
         df["TIPO_ACTIVIDAD_MANTENCION"] = pd.NA
+        df["CODIGO_CARGO_SISS"] = pd.NA
+        
         df = df[df["Status usuario"] != "NOEJ"]
         
         # ETAPA 2 COMPLETAR CAMPOS CODIGO_EMPRESA
@@ -155,7 +158,89 @@ if st.button('Iniciar Procesamiento'):
 
             # Eliminar las columnas temporales "Familia" y "CONCA_2" después del mapeo
             df.drop(columns=['Familia', 'CONCA_2'], inplace=True)
-            
+
+            # Asignación inicial de codigos basada en 'Grupo planif.'
+            condiciones = [
+                df['Grupo planif.'].isin(['OPR', 'ORE', 'ORM']),
+                df['Grupo planif.'] == 'ORA',
+                df['Grupo planif.'].isin(['RGO', 'SGM']),
+                df['Grupo planif.'].isin(['DED', 'DEP', 'DEE', 'DEI', 'DEL', 'DEM', 'ON1', 'ON2', 'ON3', 'OS1', 'OS2', 'OS3']),
+                df['Grupo planif.'].isin(['LOO', 'P01', 'P02', 'P03', 'P04', 'P05', 'P06', 'P07', 'P08', 'P09', 'P10', 'P11', 'P12', 'P13', 'P14', 'P15', 'P16', 'P17', 'P18', 'P19', 'P20', 'P21', 'TG1', 'TG2', 'TG3', 'TG4', 'TP1', 'TP2', 'TR1', 'TR2', 'TR3', 'TR4', 'TR5', 'TR6']),
+                df['Grupo planif.'] == 'JET'
+            ]
+
+            codigos = [
+                40304,  # Código para 'OPR', 'ORE', 'ORM'
+                40305,  # Código para 'ORA'
+                40306,  # Código para 'RGO', 'SGM'
+                40305,  # Código para primer grupo que requiere duplicación
+                40305,  # Código para segundo grupo que requiere duplicación
+                40305   # Código para 'JET' que también requiere duplicación
+            ]
+
+            df['CODIGO_CARGO_SISS'] = np.select(condiciones, codigos, default=np.nan)
+
+            # Duplicar filas según condiciones específicas y asignar diferentes códigos
+            grupos_duplicar = {
+                'DED': (40305, 40306),
+                'DEP': (40305, 40306),
+                'DEE': (40305, 40306),
+                'DEI': (40305, 40306),
+                'DEL': (40305, 40306),
+                'DEM': (40305, 40306),
+                'ON1': (40305, 40306),
+                'ON2': (40305, 40306),
+                'ON3': (40305, 40306),
+                'OS1': (40305, 40306),
+                'OS2': (40305, 40306),
+                'OS3': (40305, 40306),
+                'LOO': (40305, 40114),
+                'P01': (40305, 40114),
+                'P02': (40305, 40114),
+                'P03': (40305, 40114),
+                'P04': (40305, 40114),
+                'P05': (40305, 40114),
+                'P06': (40305, 40114),
+                'P07': (40305, 40114),
+                'P08': (40305, 40114),
+                'P09': (40305, 40114),
+                'P10': (40305, 40114),
+                'P11': (40305, 40114),
+                'P12': (40305, 40114),
+                'P13': (40305, 40114),
+                'P14': (40305, 40114),
+                'P15': (40305, 40114),
+                'P16': (40305, 40114),
+                'P17': (40305, 40114),
+                'P18': (40305, 40114),
+                'P19': (40305, 40114),
+                'P20': (40305, 40114),
+                'P21': (40305, 40114),
+                'TG1': (40305, 40114),
+                'TG2': (40305, 40114),
+                'TG3': (40305, 40114),
+                'TG4': (40305, 40114),
+                'TP1': (40305, 40114),
+                'TP2': (40305, 40114),
+                'TR1': (40305, 40114),
+                'TR2': (40305, 40114),
+                'TR3': (40305, 40114),
+                'TR4': (40305, 40114),
+                'TR5': (40305, 40114),
+                'TR6': (40305, 40114),
+                'JET': (40305, 40303)
+            }
+
+            # Procesar duplicación y asignación de códigos
+            for grupo, (codigo_original, codigo_duplicado) in grupos_duplicar.items():
+                filtro = df['Grupo planif.'] == grupo
+                filas_a_duplicar = df[filtro].copy()
+                filas_a_duplicar['CODIGO_CARGO_SISS'] = codigo_duplicado
+                df = pd.concat([df, filas_a_duplicar])
+
+            # Resetear el índice después de la duplicación
+            df.reset_index(drop=True, inplace=True)
+
             st.success("Espera un momento mientras procesamos tu archivo NBI!")
             st.write(df)
         
