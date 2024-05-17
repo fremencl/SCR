@@ -4,7 +4,7 @@ import pandas as pd
 import numpy as np
 
 # Título de la aplicación
-st.title('Portal Procesamiento datos SCR')
+st.title('Portal Procesamiento datos SCR - AUX_44')
 
 # Carga del archivo - solo CSV
 archivo_usuario = st.file_uploader("Por favor, cargue su archivo de datos en formato CSV aquí", type=['csv'])
